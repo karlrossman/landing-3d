@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import Model with Three.js</title>
+  <style>
+    body { margin: 0; }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+    // Inizializza la scena
+    var scene = new THREE.Scene();
+    // Inizializza la telecamera
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 0, 10); // Imposta la posizione della telecamera
+
+
+    // Inizializza il renderer con uno sfondo bianco
+    var renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0xffffff); // Colore di sfondo bianco
+    document.body.appendChild(renderer.domElement);
+
+    // Inizializza il loader glTF
+    var loader = new THREE.GLTFLoader();
+
+ // Carica il modello glTF
+loader.load('/3d/cubo05.glb', function (gltf) {
+    // Ottieni la mesh del modello
+    var model = gltf.scene;
+
+    // Posiziona il modello al centro
+    model.position.set(0, 0, 0);
+
+    // Aggiungi il modello alla scena
+    scene.add(model);
+
+    // Imposta la modalità wireframe per tutti i materiali del modello
+    model.traverse(function (child) {
+        if (child.isMesh) {
+            child.material.wireframe = true;
+        }
+    });
+
+    // Funzione di animazione
+    var animate = function () {
+        requestAnimationFrame(animate);
+
+        // Ruota il modello durante l'animazione
+        model.rotation.x += 0.01;
+        model.rotation.y += 0.01;
+
+        renderer.render(scene, camera);
+    };
+
+    // Gestisci il ridimensionamento della finestra
+    window.addEventListener('resize', function () {
+        var newWidth = window.innerWidth;
+        var newHeight = window.innerHeight;
+
+        camera.aspect = newWidth / newHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(newWidth, newHeight);
+    });
+
+    // Avvia l'animazione
+    animate();
+});
+</script>
+</body>
+</html>
